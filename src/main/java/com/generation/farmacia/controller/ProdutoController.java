@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.farmacia.model.Produto;
 import com.generation.farmacia.repository.ProdutoInterface;
+import com.generation.farmacia.service.ProdutoService;
 
 import jakarta.validation.Valid;
 
@@ -30,6 +31,9 @@ public class ProdutoController {
 	
 	@Autowired
 	public ProdutoInterface produtoInterface;
+	
+	@Autowired
+	public ProdutoService produtoService;
 	
 	@GetMapping
 	public ResponseEntity<List<Produto>> getAll(){
@@ -55,12 +59,13 @@ public class ProdutoController {
 	
 	@PostMapping
 	public ResponseEntity<Produto> post(@Valid @RequestBody Produto produto){
+		
 		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(produtoInterface.save(produto));
+				.body(produtoInterface.save(produtoService.calcularDesconto(produto)));
 	}
 	
 	@PutMapping
-	public ResponseEntity<Produto> put(@Valid @RequestBody Produto produto){
+	public ResponseEntity<Produto> put(@Valid @RequestBody Produto produto){		
 		return produtoInterface.findById(produto.getId())
 				.map(resposta -> ResponseEntity.status(HttpStatus.CREATED)
 						.body(produtoInterface.save(produto)))
